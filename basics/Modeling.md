@@ -239,7 +239,7 @@ So you can implement:
 * Type 1, 2, 3
 * Hybrid patterns
 * Even custom SCD logic beyond traditional definitions
-* 
+  
 # Quick Summary
 | SCD Type  | Support in Databricks  | How                        |
 | --------- | ---------------------- | -------------------------- |
@@ -249,5 +249,5 @@ So you can implement:
 | Hybrid    | ✅ Common              | MERGE logic                |
 | Real-time | ✅ Strong              | Streaming + CDF            |
 
-Hybrid	✅ Common	MERGE logic
-Real-time	✅ Strong	Streaming + CDF
+* Hybrid	✅ Common	MERGE logic
+* Real-time	✅ Strong	Streaming + CDF
