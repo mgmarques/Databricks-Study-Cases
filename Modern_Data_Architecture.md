@@ -12,6 +12,10 @@ A modern AI/ML-ready data platform integrates federated data sources, centralize
 ## Modern AI/ML-Ready Data Platform Architecture
 
 ```text
+                 LEGACY ODS/DW MAPPING
+        Sources → Staging → ODS → DW (Star Schemas)
+                          ||
+                          vv
                +---------------------+
                |     Data Sources    |
                |---------------------|
@@ -27,25 +31,24 @@ A modern AI/ML-ready data platform integrates federated data sources, centralize
                  +-----------------+
                           |
                           v
-                 +-----------------+
-                 |  Raw Data Lake  |
-                 |   (Bronze)      |
-                 |   Federated     |
-                 |-----------------|
-                 | Databricks Delta|
-                 | Immutable/Raw   |
-                 +-----------------+
+         +-----------------------------------+
+         |  Raw Data Lake (Bronze)           |
+         |  Federated / Domain-Owned         |
+         |-----------------------------------|
+         | Databricks Delta                  |
+         | Immutable / Versioned             |
+         | Minimal Transformations           |
+         +-----------------------------------+
                           |
                           v
-                 +----------------------------+
-                 |  Data Processing &         |
-                 |  Transformation (Silver →  |
-                 |  Gold Layers)              |
-                 |----------------------------|
-                 | Databricks / Spark         |
-                 | dbt OR Lakeflow/DLT        |
-                 | Tests + Lineage            |
-                 +----------------------------+
+        +---------------------------------------------+
+        |  Data Processing & Transformation           |
+        |  (Silver → Gold)                            |
+        |---------------------------------------------|
+        | Databricks / Spark / dbt / Lakeflow/DLT     |
+        | Reproducible Transformations, Testing       |
+        | Lineage & Governance (Unity Catalog)        |
+        +---------------------------------------------+
                           |
            +--------------+----------------+
            |                               |
@@ -56,41 +59,41 @@ A modern AI/ML-ready data platform integrates federated data sources, centralize
   |------------------ |          |--------------------|
   | Clean & Versioned |          | ML Features /      |
   +-------------------+          | Embeddings         |
+           |                     +--------------------+
+           |                              |
+           |                              v
+           |                     +------------------+
+           |                     | AI/ML Workloads  |
+           |                     |------------------|
+           |                     | Model Training   |
+           |                     | MLOps Pipelines  |
+           |                     | RAG / GenAI      |
+           |                     | Vector DBs       |
+           |                     +------------------+
+           |                               |
+           |                               v
+           |                     +------------------------+
+           |                     | Model Deployment &     |
+           |                     | Monitoring             |
+           |                     |------------------------|
+           |                     | MLflow / SageMaker /   |
+           |                     | Databricks ML          |
+           |                     +------------------------+
+           |                               |
+           |                               v
+           |                     +--------------------+
+           |                     | Consumption /      |
+           +-------------------> | Dashboards / Apps  |
+                                 | / LLM queries      |
                                  +--------------------+
-                                          |
-                                          v
-                                +------------------+
-                                | AI/ML Workloads  |
-                                |------------------|
-                                | Model Training   |
-                                | MLOps Pipelines  |
-                                | RAG / GenAI      |
-                                | Vector DBs       |
-                                +------------------+
-                                          |
-                                          v
-                                +------------------------+
-                                | Model Deployment &     |
-                                | Monitoring             |
-                                |------------------------|
-                                | MLflow / SageMaker /   |
-                                | Databricks ML          |
-                                +------------------------+
-                                          |
-                                          v
-                                +--------------------+
-                                | Consumption /      |
-                                | Dashboards / Apps  |
-                                | / LLM queries      |
-                                +--------------------+
 
 Legend:
-- Bronze → Silver → Gold = structured data layers  
-- Raw data is **federated by domain**, curated Silver/Gold is **centralized**  
-- Transformations = dbt OR Databricks Lakeflow/DLT, includes tests, lineage, reproducibility  
-- Orchestration layer (Airflow / ADF / Step Functions) manages all pipelines  
-- Feature Store & Embeddings feed AI/ML Workloads & RAG pipelines  
-- Unity Catalog provides governance & lineage  
+- **Legacy Mapping:** ODS → Bronze; DW → Silver/Gold
+- **Federated Bronze:** domain-owned raw data, minimal transformation
+- **Centralized Silver/Gold:** integrated, tested, curated datasets
+- **Feature Store / Embeddings:** ML-ready data, GenAI/RAG support
+- **Governance:** Unity Catalog ensures lineage, metadata, access control
+- **Orchestration:** Airflow, ADF, Step Functions manage pipelines and ML workflows
 ```
 ### Legacy architecture (Sources → Staging → ODS → DW):
 * ODS was not raw sources, but a consolidated operational layer: cleaned, integrated, partially transformed, often with incremental loads and SCD handling.
@@ -102,6 +105,7 @@ In the modern TO-BE architecture:
 * Centralized Silver / Gold Layer replaces the DW Business Layer:
    - Curated, integrated datasets for analytics, AI/ML, GenAI.
    - Implements versioning, testing, SCD-like behavior, and transformations similar to what ODS used to handle, but now in a more modern, reproducible, and scalable way.
+   - 
 | Legacy Layer         | Modern TO-BE Equivalent             | Notes                                                       |
 | -------------------- | ----------------------------------- | ----------------------------------------------------------- |
 | Sources              | Sources                             | ERP, CRM, IoT, APIs                                         |
@@ -190,6 +194,7 @@ In the modern TO-BE architecture:
 
 ---
 ## 11. AS-IS vs TO-BE
+
 | Aspect            | AS-IS                                 | TO-BE                                        |
 | ----------------- | ------------------------------------- | -------------------------------------------- |
 | State             | Current reality                       | Desired future                               |
@@ -240,6 +245,7 @@ Generative AI (GenAI) initiatives often require:
 
 ### Vector DBs & GenAI Components
 For Generative AI / RAG use cases, platforms integrate:
+
 | Component         | Purpose                            |
 | ----------------- | ---------------------------------- |
 | **Embeddings**    | Converts text/data to vectors      |
