@@ -23,7 +23,7 @@ We can highlight 4 layers, which align closely with a Medallion + ML/GenAI stack
                  LEGACY ODS/DW MAPPING Migration
                       Sources → Staging → ODS → DW (Star Schemas)
                                         ||
-                                        vv
+                                        ▼▼
                             ┌─────────────────────────────┐
                             │       Governance Layer      │
                             │  Catalog / Lineage / Access │
@@ -51,13 +51,13 @@ We can highlight 4 layers, which align closely with a Medallion + ML/GenAI stack
           +-----------------------------+                  +---------------------------+
           |  Raw Data Lake (Bronze)     |<---------------- | Streamed Events / Logs    |
           | Federated / Domain-Owned    |                  | Real-time feed to Bronze  |
-          +-----------------------------+                  | Real-time feed to Bronze  |
-          | Databricks Delta            |                  +---------------------------+
+          +-----------------------------+                  +---------------------------+
+          | Databricks Delta            |                  
           | Immutable / Versioned       |
           |  Minimal Transformations    |
           +-----------------------------+
                           |
-                          v
+                          ▼
         +---------------------------------------------+
         |  Data Processing & Transformation           |
         |  (Silver → Gold)                            |
@@ -78,7 +78,7 @@ We can highlight 4 layers, which align closely with a Medallion + ML/GenAI stack
                           |
            +--------------+----------------+
            |                               |
-           v                               v
+           ▼                               ▼
   +-------------------+          +--------------------+
   | Curated Datasets  |          | Feature Store &    |
   | (Centralized Gold)|          | Embeddings         |
@@ -87,7 +87,7 @@ We can highlight 4 layers, which align closely with a Medallion + ML/GenAI stack
   +-------------------+          | Embeddings         |
            |                     +--------------------+
            |                              |
-           |                              v
+           |                              ▼
            |                     +------------------+
            |                     | AI/ML Workloads  |
            |                     |------------------|
@@ -97,7 +97,7 @@ We can highlight 4 layers, which align closely with a Medallion + ML/GenAI stack
            |                     | Vector DBs       |
            |                     +------------------+
            |                               |
-           |                               v
+           |                               ▼
            |                     +------------------------+
            |                     | Model Deployment &     |
            |                     | Monitoring             |
@@ -106,7 +106,7 @@ We can highlight 4 layers, which align closely with a Medallion + ML/GenAI stack
            |                     | Databricks ML          |
            |                     +------------------------+
            |                               |
-           |                               v
+           |                               ▼
            |                     +--------------------+
            |                     | Consumption /      |
            +-------------------> | Dashboards / Apps  |
