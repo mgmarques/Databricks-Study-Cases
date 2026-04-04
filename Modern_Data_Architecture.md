@@ -20,7 +20,7 @@ We can highlight 4 layers, which align closely with a Medallion + ML/GenAI stack
 ## Modern AI/ML-Ready Data Platform Architecture
 
 ```text
-                 LEGACY ODS/DW MAPPING
+                 LEGACY ODS/DW MAPPING Migration
                       Sources → Staging → ODS → DW (Star Schemas)
                                         ||
                                         vv
