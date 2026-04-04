@@ -146,17 +146,3 @@ Choosing between them is more about:
 * team skills
 * architecture philosophy
 * lock-in tolerance
-
-So, really make an ASIS vs TOBE before any decision:
-| Aspect            | AS-IS                                 | TO-BE                                        |
-| ----------------- | ------------------------------------- | -------------------------------------------- |
-| State             | Current reality                       | Desired future                               |
-| Focus             | Understanding & documenting           | Designing & optimizing                       |
-| Purpose           | Baseline & analysis                   | Target & guidance                            |
-| Tools / Artifacts | Process maps, audits, system diagrams | Future process models, architecture diagrams |
-| Typical Questions | What exists? How does it work?        | How should it work? What should change?      |
-
-**Why it’s useful**
-* Gap analysis: Compare AS-IS vs TO-BE to identify changes needed
-* Planning: Helps prioritize improvements, investments, or tool adoption
-* Stakeholder alignment: Everyone sees current pain points and the vision
