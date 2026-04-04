@@ -105,7 +105,7 @@ In the modern TO-BE architecture:
 * Centralized Silver / Gold Layer replaces the DW Business Layer:
    - Curated, integrated datasets for analytics, AI/ML, GenAI.
    - Implements versioning, testing, SCD-like behavior, and transformations similar to what ODS used to handle, but now in a more modern, reproducible, and scalable way.
-   - 
+     
 | Legacy Layer         | Modern TO-BE Equivalent             | Notes                                                       |
 | -------------------- | ----------------------------------- | ----------------------------------------------------------- |
 | Sources              | Sources                             | ERP, CRM, IoT, APIs                                         |
@@ -209,7 +209,7 @@ In the modern TO-BE architecture:
 * Stakeholder alignment: Share current pain points and the future vision  
 
 ---
-# Appendix - Ensure the platform is AI/ML-ready, including support for MLOps and GenAI initiatives (RAG, embeddings, vector databases)
+## Appendix - Ensure the platform is AI/ML-ready, including support for MLOps and GenAI initiatives (RAG, embeddings, vector databases)
 ### AI/ML-Ready Platform
 
 An AI/ML-ready platform is designed so that data scientists and ML engineers can easily:
