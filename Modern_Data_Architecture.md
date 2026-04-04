@@ -73,7 +73,7 @@ We can highlight 4 layers, which align closely with a Medallion + ML/GenAI stack
               |------------------------|
               | Business Metrics / KPIs|
               | Consistent Definitions |
-              | Feeding BI + ML + LLM |
+              | Feeding BI + ML + LLM  |
               +------------------------+
                           |
            +--------------+----------------+
@@ -474,7 +474,7 @@ If you’re using LLMs:
 
 ### Without these:
 * LLM = fast but wrong
-* With them:
+### With them:
 * LLM = trusted decision tool
 
 ---
