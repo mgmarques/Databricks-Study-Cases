@@ -480,7 +480,7 @@ If you’re using LLMs:
 ---
 ## 12. Most Enterprise-Ready 
 
-* **Kafka / Confluent**: bloodstream of events
+* **Kafka / Confluent**: stream of events
 * **Flink / Dataflow**: real-time processing engine
 * **Databricks / Spark / DLT**: compute + pipelines
 * **Bronze/Silver/Gold by dbt/DLT**: prepares data, structured, clenead, versioned data
@@ -499,10 +499,10 @@ If you’re using LLMs:
 
 ## 13. Key TO-BE Principles
 * Structured **Bronze → Silver → Gold** data layers  
-* Reproducible, testable transformations with **dbt or Lakeflow/DLT**  
+* Reproducible, testable transformations with **dbt** or **Lakeflow/DLT**  
 * Centralized governance & lineage via **Unity Catalog**  
 * Orchestration ensures **all pipelines are reliable and auditable**  
-* Platform fully **AI/ML-ready**, including support for **GenAI, embeddings, and RAG**  
+* Platform fully **AI/ML-ready**, including support for **GenAI**, **embeddings**, and **RAG**  
 * **Federated sources with centralized curation** for enterprise-wide consistency  
 
 ---
@@ -518,6 +518,7 @@ If you’re using LLMs:
 
 ---
 ## 15. AS-IS vs TO-BE
+Never forget to develop a business plan for this type of business "transformation" effort. It will certainly be a set of initiatives that will require alignment with C-levels, senior management, and experts from across the organization. Company-wide involvement will be essential to putting it into practice.
 
 | Aspect            | AS-IS                                 | TO-BE                                        |
 | ----------------- | ------------------------------------- | -------------------------------------------- |
@@ -545,7 +546,7 @@ An AI/ML-ready platform is designed so that data scientists and ML engineers can
  * Centralized or federated access to high-quality data
  * Scalable compute for model training (CPU/GPU clusters)
  * Versioning of datasets and models
- *Integration with orchestration tools (Airflow, Step Functions, ADF)
+ * Integration with orchestration tools (Airflow, Step Functions, ADF)
  * MLOps support for automation, CI/CD of ML workflows
 ### MLOps Support
 MLOps (Machine Learning Operations) is like DevOps, but for ML:
