@@ -93,7 +93,7 @@ Legend:
 - Feature Store & Embeddings feed AI/ML Workloads & RAG pipelines
 - Unity Catalog provides governance & lineage
 ```
-### Legend/Notes
+### Notes
 - **Centralized vs Federated:** Can be a single data warehouse/lake or a Data Mesh with domain ownership.  
 - **AI/ML Workloads:** Supports traditional ML, MLOps, GenAI (RAG, embeddings, vector DBs).  
 - **Tools Mentioned:** Databricks, Spark, Airflow, ADF, Step Functions, MLflow, SageMaker, Azure ML, Pinecone/Weaviate.  
