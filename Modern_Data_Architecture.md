@@ -50,8 +50,8 @@ A modern AI/ML-ready data platform integrates federated data sources, centralize
            +--------------+----------------+
            |                               |
            v                               v
-  +-------------------+          +---------------------+
-  | Curated Datasets  |          | Feature Store &     |
+  +-------------------+          +--------------------+
+  | Curated Datasets  |          | Feature Store &    |
   | (Centralized Gold)|          | Embeddings         |
   |------------------ |          |--------------------|
   | Clean & Versioned |          | ML Features /      |
@@ -78,11 +78,11 @@ A modern AI/ML-ready data platform integrates federated data sources, centralize
                                 +------------------------+
                                           |
                                           v
-                                +------------------+
-                                | Consumption /    |
-                                | Dashboards / Apps|
-                                | / LLM queries    |
-                                +------------------+
+                                +--------------------+
+                                | Consumption /      |
+                                | Dashboards / Apps  |
+                                | / LLM queries      |
+                                +--------------------+
 
 Legend:
 - Bronze → Silver → Gold = structured data layers  
