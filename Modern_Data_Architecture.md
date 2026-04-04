@@ -36,7 +36,7 @@ We can highlight 4 layers, which align closely with a Medallion + ML/GenAI stack
                           |-------------------------------|
                           | ERP / CRM / IoT / APIs / Apps |
                           +-------------------------------+
-                                        │                                        │
+                                        │                                        
                                         ▼
                 ┌───────────────────────┴───────────────────────────────┐
                 ▼                                                       ▼
