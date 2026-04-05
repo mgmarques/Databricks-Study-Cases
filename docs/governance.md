@@ -6,36 +6,35 @@ It doesn't matter if the company has the best modern architecture if we get thes
 * Treating governance as documentation instead of **oversight**
 * Ignoring **ML/GenAI governance** and focusing only on BI
 * Ignoring the **semantic layer** leads to inconsistent AI results
-* Lack of accountability leads to a lack of responsibility in the data structure
+* Lack of **accountability** leads to a lack of **responsibility** in the data structure
 
-Our architecture becomes truly **enterprise-grade* when we folloing this primary guidelines:
+Our architecture becomes truly **enterprise-grade** when we follow these primary guidelines:
 * **1. Governance is NOT a separate layer**, it is **embedded into every pipeline, dataset, and model**
-* **2. Semantic Layer + Governance work together**: 
-  * Semantic Layer defines truth
-  * Governance enforces trust
-* **3. AI governance is treated as first-class**, each features, embeddings, and models are **governed assets**
+* **2. Semantic Layer and Governance work together**: 
+  * Semantic Layer **defines truth**
+  * Governance **enforces trust**
+* **3. AI governance is treated as first-class**, each feature, embedding, and model is a **governed asset**
 
 But it is really important to highlight that this is not a technology rollout problem.
-It’s an **operating model** plus **trust transformation**, where the **semantic layer** and **governance** become enterprise capabilities, not just tools.
+It’s an **operating model** and **trust transformation**, where the **semantic layer** and **governance** become enterprise capabilities, not just tools.
 
 If you don’t anchor this at the C-level and domain ownership level, everything we listed here becomes fragmented and fails quietly.
 
-Below is a deeper, practical expansion of **specific strategies + tools** mapped to the challenges that typically arise in this kind of **Lakehouse + Data Mesh + AI/GenAI platform**.
+So, let's start with a deeper, practical expansion of **specific strategies** and **tools** mapped to the challenges that typically arise in this kind of **Lakehouse + Data Mesh + AI/GenAI platform**.
 
 ---
 # 1. Core Governance Challenges
 Before tools, it’s important to be explicit about the friction points:
 
 ### 1. Federated vs Centralized Tension (Data Mesh problem)
+* Domains own **Bronze data**
+* Central team owns **Silver/Gold** and **semantic layer**
 
-* Domains own Bronze data
-* Central team owns Silver/Gold + semantic layer
-
-**Risk**: inconsistent standards, duplicated logic, “multiple truths”
+**Risk**: inconsistent standards, duplicated logic, “multiple truths”.
 
 ---
 ### 2. Data Trust & Quality at Scale
-* Raw → curated transformations across many pipelines
+* Raw to curated transformations across many pipelines
 
 **Risk**: silent data failures, broken ML models, bad dashboards.
 
@@ -52,17 +51,16 @@ Before tools, it’s important to be explicit about the friction points:
   * Data scientists
   * LLMs
   
-  **Risk**: overexposure, PII leakage, prompt-level data leaks.
+**Risk**: overexposure, PII leakage, prompt-level data leaks.
   
 ---
 ### 5. Semantic Consistency (Critical for GenAI)
-
 * Metrics reused across:
   * Dashboards
   * APIs
   * LLM queries
   
-  **Risk**: LLM hallucination due to inconsistent definitions.
+**Risk**: LLM hallucination due to inconsistent definitions.
   
 ---
 ### 6. Governance for AI/ML + RAG
@@ -75,13 +73,30 @@ Before tools, it’s important to be explicit about the friction points:
 
 ---
 # 2. Governance Strategies
+To turn it more interesting, let's give you some options, but a more strategic forward consideration of this main stack:
+* Amazon MSK / Confluent
+* Apache Airflow
+* Databricks
+* dbt
+* Amazon Web Services
+
 ## 2.1. Semantic Layer as Governance Control Point
-Treat semantic layer as **Governed API for data** to promote metric standardization. This is one of our **most important insights**.
+Treat the semantic layer as a **Governed API for data** to promote metric standardization. This is one of our **most important insights**!
 
 ### Tools:
-* **dbt Semantic Layer**
-* **Looker**
-* **Cube**
+* **dbt Semantic Layer**: Default (most aligned with our stack)
+* **Looker**: Best for governed BI + strong UX
+* **Cube**: Best for API-first / product use cases
+
+Our architecture already has:
+* Strong data engineering backbone (Kafka + Airflow)
+* Strong processing + storage (Databricks Lakehouse)
+* Likely SQL-first transformations
+
+So your semantic layer must:
+* Integrate tightly with data pipelines
+* Support governance + versioning
+* Extend to ML + GenAI (not just BI)
 
 ### Enforce:
 * All BI queries go through it
@@ -98,22 +113,36 @@ Instead of enforcing governance later, **embed governance directly into pipeline
 * Enforce **tests in transformation (Silver/Gold)**
 * Attach **metadata at creation time**
 
+Key idea: ***Pipelines should fail if governance rules fail***.
+
 ### Tools:
 * **dbt**
   * Schema tests (`not null`, `unique`)
   * Custom data quality tests
 
-* **Delta Live Tables**
+* **Delta Live Tables** (Databricks DLT)
   * Expectations (fail, drop, quarantine)
 
 * **Great Expectations**
   * Profiling + validation suites
+ 
+We can skip Great Expectations, unless you have a very specific need:
+* advanced profiling
+* business-facing data quality reports
+* cross-platform validation (outside Databricks)
 
-Key idea: ***Pipelines should fail if governance rules fail***.
+**Example:**
+* validating data before it even reaches Databricks
+* regulatory/compliance-heavy environments
 
 ---
 ## 2.3. Data Contracts Between Domains
 Critical for **Data Mesh + Federated Bronze**
+
+### Purpose
+* Ensure federated domains publish predictable, governed data products.
+* Define schema, SLAs, ownership, and allowed transformations upfront.
+* Prevent downstream chaos like broken pipelines, schema drift, or inconsistent metrics.
 
 Each domain publishes:
 * Schema
@@ -122,17 +151,28 @@ Each domain publishes:
 * Allowed transformations
 
 ### Implementation:
-* JSON/YAML contracts stored in Git
-* Enforced at ingestion
+| Component                      | Details                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| **Contract Definition**        | JSON or YAML stored in Git for versioning                                 |
+| **Contract Enforcement**       | Enforced at ingestion and in transformation pipelines                     |
+| **Domain Responsibilities**    | Each domain owns schema, freshness, completeness, allowed transformations |
+| **Monitoring**                 | Databand tracks SLA violations, pipeline failures                         |
+| **Integration with Pipelines** | dbt models can act as “contract-enforced interfaces”                      |
 
 ### Tools:
-* **Apache Kafka** + schema registry
-* **Confluent** Schema Registry
-* dbt models as “contract-enforced interfaces”
+* **Amazon MSK** Kafka-compatible ingestion, topic management per domain
+* **Confluent** Store, version, and validate schemas at ingestion
+* **dbt** models as “contract-enforced interfaces”.
 
 ### Prevents:
 * Breaking downstream pipelines
 * Schema drift chaos
+
+### Governance Alignment
+* Data Quality & Observability: Databand monitors contract adherence and pipeline health.
+* Semantic Layer: Consistent contracts feed into Gold datasets and semantic definitions.
+* Access Control: Unity Catalog ensures only authorized domains can publish or consume.
+* Policy-as-Code: Git + dbt tests + Terraform codify contracts as enforceable policies.
 
 ---
 ## 2.4. Unified Metadata Layer (The Backbone)
@@ -145,10 +185,62 @@ A **central metadata system** that captures:
 Without this, governance collapses.
 
 ### Tools:
-* **Microsoft Purview**
+* Databricks **Unity Catalog**
 * **Collibra**
 * **Alation**
-* **Unity Catalog**
+* **Microsoft Purview**
+
+Based on our primary stack:
+1. If you want practical and efficient, go with Unity Catalog
+2. If you want an enterprise governance program, add on top the Collibra
+3. If you want analyst-friendly discovery, consider Alation
+
+Keep in mind that options 2 and 3 are more costly and complicated. Both are sitting “on top” of our stack, not inside it.
+Also, we can include one later if it's really necessary.
+
+#### Collibra
+Enterprise-grade governance (very strong)
+
+Pros:
+* compliance-heavy orgs
+* business glossary/stewardship
+
+Cons:
+* expensive
+* heavy to implement
+* requires a dedicated governance team
+
+Choose this if:
+* you’re a large enterprise
+* Governance is a top-down initiative
+
+#### Alation
+Pros:
+* data discovery
+* analyst adoption
+* Works nicely with dbt and BI tools
+* Less “heavy governance,” more usability
+* helping analysts find data
+* improving collaboration
+
+Cons:
+* nice-to-have (discovery layer)
+* not core governance
+* cost vs value
+* being “authoritative”.
+
+Good if:
+* your goal = self-service analytics
+* not strict compliance
+
+**Take option 1 anyway**: In our stack, Databricks is likely where data lands and is consumed, so governing there is the most practical move:
+* Works well with AWS (IAM, S3, etc.)
+* Becoming the center of gravity for governance in modern data stacks
+* Native integration with Databricks (no friction)
+* Handles:
+  - data access control
+  - lineage (especially with dbt + notebooks)
+  - governance across lakehouse
 
 ### Strategy:
 * Auto-ingest metadata from:
@@ -159,7 +251,7 @@ Without this, governance collapses.
 
 ---
 ## 2.5. End-to-End Lineage (Including ML + RAG)
-Basic lineage is not enough anymore, we need lineage across:
+Basic lineage is not enough anymore; we need lineage across:
 * Tables
 * Pipelines
 * Features
@@ -168,8 +260,35 @@ Basic lineage is not enough anymore, we need lineage across:
 
 ### Tools:
 * **OpenLineage**
-* dbt lineage graphs
+* **dbt** lineage graphs
 * **MLflow**
+
+But none of these alone gives you a full lineage. Together, they can form a complete lineage backbone if integrated correctly.
+**dbt** shows how data transforms, **MLflow** shows how models are built, and **OpenLineage** connects everything into a true end-to-end story.
+
+Use ALL THREE together:
+* OpenLineage →fpr backbone
+* dbt for data lineage
+* MLflow for ML lineage
+
+and add:
+* Extend later for RAG lineage
+* A catalog/metadata platform to see and query lineage:
+
+Examples:
+* DataHub
+* Amundsen
+* Unity Catalog
+
+| Capability              | DataHub      | Amundsen   | Unity Catalog          |
+| ----------------------- | ------------ | ---------- | ---------------------- |
+| Cross-platform metadata | ✅ Excellent | ⚠️ Limited | ❌ Weak                |
+| Databricks integration  | ✅ Good      | ⚠️ Basic   | ✅ Native              |
+| Governance (enterprise) | ✅ Strong    | ❌ Weak    | ✅ Strong (within DBX) |
+| Lineage (end-to-end)    | ✅ Strong    | ❌ Weak    | ⚠️ Partial             |
+| AI / ML / RAG readiness | ✅ Strong    | ❌ Weak    | ⚠️ Medium              |
+| Operational effort      | ⚠️ Medium    | ✅ Low     | ✅ Low                 |
+| Vendor lock-in          | ❌ Low       | ❌ Low     | ⚠️ High                |
 
 ### Advanced Strategy:
 **Track:**
@@ -182,7 +301,7 @@ Document → embedding → vector DB → retrieval → LLM response
 ```
 ---
 ## 2.6. Fine-Grained Access Control (Critical for GenAI)
-Traditional RBAC is not enough, we need:
+Traditional RBAC is not enough; we need:
 * Row-level security (RLS)
 * Column-level security (CLS)
 * Dynamic masking
@@ -190,6 +309,20 @@ Traditional RBAC is not enough, we need:
 ### Tools:
 * **Unity Catalog**
 * Snowflake / BigQuery built-in policies
+
+#### DataHub
+* Metadata
+* Classification
+* Ownership
+* Lineage
+
+#### Unity Catalog
+* Fine-grained access control
+* Enforcement
+* Security
+
+Then, on our primary stack, **DataHub** tells you what the data is and how it should be governed, 
+while **Unity Catalog** makes sure those rules are actually enforced.
 
 ### Strategy:
 * Tag sensitive data (PII, financial, etc.)
@@ -207,16 +340,27 @@ Testing ≠ monitoring, we need:
 * Distribution drift detection
 
 ### Tools:
-* **Monte Carlo**
-* **Databand**
-* Great Expectations (extended)
+* **Monte Carlo**: Full data observability platform, but expensive and black-box
+* **Databand**: Pipeline + data observability, but slightly less mature than Monte Carlo and still a paid tool
+* Great Expectations (extended): Testing + validation framework
+
+| Capability             | Great Expectations | Monte Carlo  | Databand     |
+| ---------------------- | ------------------ | ------------ | ------------ |
+| Data testing           | ✅ Excellent       | ⚠️ Limited   | ⚠️ Medium    |
+| Observability          | ❌ No              | ✅ Excellent | ✅ Strong    |
+| Airflow integration    | ✅ Good            | ⚠️ Indirect  | ✅ Excellent |
+| Databricks integration | ✅ Good            | ✅ Strong    | ✅ Strong    |
+| Automation (anomalies) | ❌ No              | ✅ Yes       | ✅ Yes       |
+| Cost                   | ✅ Low             | ❌ High      | ⚠️ Medium    |
 
 **Especially critical for:**
 * ML features
-* Streaming pipelines
+* Streaming pipelines, but use cautiously, only if needed
 
 ---
 ## 2.8: Governance for Feature Store & ML
+Where do features live, how are they governed, and how do they connect to models?
+
 This is where most architectures fail:
 * Feature duplication
 * Training-serving skew
@@ -227,18 +371,42 @@ This is where most architectures fail:
 * Version everything
 
 ### Tools:
-* Databricks Feature Store
+* Databricks Feature Store (Primary Choice, role: Source of truth for features)
+* Databricks **MLflow** (Mandatory Companion, role: System of record for models)
 * **Amazon SageMaker** Feature Store
-* **MLflow**
+
+Databricks Feature Store Governance Alignment
+* Access control via Unity Catalog
+* Metadata via DataHub
+
+This is HUGE: Features become governed data products.
+
+MLflow enables:
+* Reproducibility
+* Auditability
+* Model lineage
+
+AWS SageMaker only if:
+* You are heavily AWS-native
+* You deploy models primarily in SageMaker
+* You need tight integration with:
+  - Lambda
+  - API Gateway
+  - real-time endpoints
 
 ### Govern:
 * Feature definitions
 * Feature lineage
 * Model inputs/outputs
+  * Experiments
+  * Model versions
+  * Parameters
+  * Metrics
+  * Model registry
 
 ---
 ## 2.9: Governance for Embeddings & RAG
-New and often ignored.
+New and often ignored. Treat embeddings as first-class governed data products, just like features. If you skip this, you risk untraceable RAG answers, inconsistent LLM responses, and potential compliance issues.
 
 ### Risks:
 * Sensitive data embedded into vectors
@@ -251,30 +419,81 @@ New and often ignored.
 * **Govern retrieval**: Apply access control at query time
 
 ### Tools:
-* Vector DBs (with metadata filtering)
-* MLflow for tracking
-* Custom RAG orchestration
+| Responsibility                     | Recommended Tool                                    | Role in Governance                                                                                                             |
+| ---------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Embeddings storage & retrieval** | Vector DB (e.g., Pinecone, Weaviate, Milvus, FAISS) | Store embeddings with metadata; enable filtering by dataset, domain, or sensitivity; versioning where supported                |
+| **Model / Embedding tracking**     | MLflow                                              | Track embedding generation runs, parameters, model versions; ensure reproducibility and auditability                           |
+| **RAG orchestration**              | Custom orchestration (Airflow)     | Track pipelines end-to-end, including: ingestion → embedding → vector DB → LLM consumption; apply data quality checks          |
+| **Access control**                 | Unity Catalog + Vector DB ACLs                      | Ensure only authorized users or models can read sensitive embeddings; enforce row/column-level policies via metadata filtering |
+| **Observability / Quality**        | Databand                                            | Monitor embedding pipelines for anomalies, missing vectors, drift, or failed runs                                              |
+
+For our primary stack, the main Choice is Weaviate:
+* Native Python SDK: integrates with Databricks/MLflow/Airflow pipelines
+* Metadata filtering: essential for RAG governance
+* Can be cloud-managed (AWS EC2/EKS): aligns with your AWS stack
+* Open-source: avoids vendor lock-in
+
+Alternative: Pinecone if you want zero ops and can accept SaaS vendor lock-in.
 
 ---
 ## 2.10: Policy-as-Code (Automation at Scale)
 
-Manual governance does not scale, so, we need to define governance rules as code:
+Manual governance does not scale, so we need to define governance rules as code:
 * Access policies
 * Data quality rules
 * Contracts
 
+We’re looking at codifying governance and access policies so they are versioned, testable, and repeatable.
+
+Policy-as-Code ensures governance is proactive, not reactive.
+
+Instead of waiting for audits or manual checks, every new dataset, feature, or embedding automatically adheres to access, quality, and lineage policies.
+Combined with semantic layer + governance layers + ML/GenAI tracking, it completes the TO-BE enterprise vision.
+
 ### Tools:
-* Terraform (infra + permissions)
-* dbt (data rules)
-* Unity Catalog APIs
+| Responsibility                             | Tool               | Role in Governance                                                                                                              |
+| ------------------------------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Infrastructure & Permissions**           | Terraform          | Provision cloud resources, Databricks workspaces, S3 buckets, Vector DB, and enforce IAM roles/policies                         |
+| **Data Rules / Transform Policies**        | dbt                | Declare data quality rules, constraints, and transformation policies as code (e.g., tests for nulls, uniqueness, relationships) |
+| **Fine-Grained Access / Catalog Policies** | Unity Catalog APIs | Programmatically manage table, column, and feature-level access; integrate with CI/CD pipelines to enforce permissions          |
+
 
 ### Benefit:
-* Versioned
-* Auditable
-* Reproducible
+**Repeatable Governance**
+* Any new workspace, database, or feature store dataset automatically inherits codified policies.
+* Reduces human error and ensures enterprise-wide consistency.
+
+**Versioned & Auditable**
+* Policies are stored in Git alongside dbt models and Terraform code → full audit trail.
+* Changes can be reviewed, tested, and rolled back if needed.
+
+**Integration Across Stack**
+* Terraform handles infra + IAM.
+* dbt enforces data validation & business rules.
+* Unity Catalog APIs enforce access on Delta tables, Feature Store, embeddings (Weaviate integration via metadata filtering).
+
+**CI/CD & Automation**
+* Terraform + Unity Catalog APIs can be deployed via pipelines (GitHub Actions, AWS CodePipeline, etc.)
+* dbt tests run automatically on every transformation → enforcement of rules “by design”.
+
 ---
 # 3. How It Maps to Our Architecture
 ### Governance Embedded Across Layers
+
+| Layer / Focus                         | Tools / Components                                  | Governance & Notes                                                                                                                        |
+| ------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Semantic Layer (1)**                | dbt Semantic Layer                                  | Centralized business metrics, consistent KPIs, BI + LLM consistency                                                                       |
+| **Governance by Design (2)**          | dbt tests, DLT expectations                         | Declarative policies baked into pipelines                                                                                                 |
+| **Data Contracts (3)**                | Amazon MSK + Confluent Schema Registry + dbt models | Federated Bronze enforcement, schema + SLA + ownership management                                                                         |
+| **Metadata Layer (4)**                | DataHub                                             | Metadata catalog, lineage, ownership tracking                                                                                             |
+| **End-to-End Lineage (5)**            | dbt lineage graphs + OpenLineage                    | Track transformations, features, embeddings, and RAG pipelines                                                                            |
+| **Access Control (6)**                | Unity Catalog                                       | Fine-grained row/column/table-level access policies                                                                                       |
+| **Data Observability (7)**            | Databand                                            | Monitor pipeline health, detect anomalies, drift, failures                                                                                |
+| **ML / Feature Store Governance (8)** | Databricks Feature Store + MLflow                   | Track feature creation, usage, versioning, reproducibility                                                                                |
+| **Embeddings & RAG Governance (9)**   | Weaviate + MLflow + custom orchestration            | Embeddings stored with metadata, tracked for lineage, orchestrated for RAG pipelines, access controlled via Unity Catalog + Weaviate ACLs |
+| **Policy-as-Code (10)**               | Terraform + dbt + Unity Catalog APIs                | Codify infra, data rules, and access policies → versioned, testable, automated                                                            |
+
+On our architecture:
 
 | Layer                        | Startegies      |Governance Strategy                                                                      |
 | ---------------------------- | ----------------|---------------------------------------------------------------------------------------- |
@@ -285,6 +504,7 @@ Manual governance does not scale, so, we need to define governance rules as code
 | **Feature Store**            | 5, 6, and 8     | Feature versioning, lineage, reuse, training-serving consistency                        |
 | **ML/RAG**                   | 5, 6, and 9     | Model governance, embedding control, lineage, evaluation, retrieval governance          |
 | **Consumption**              | 1, 6, and 9     | Access control, masking, auditing, semantic enforcement, LLM-safe access                |
+
 
 # 4. Essential Guidelines to Roadmap:
 You’re thinking about this the right way—and also spotting something many teams miss:
