@@ -506,13 +506,10 @@ On our architecture:
 | **Consumption**              | 1, 6, and 9     | Access control, masking, auditing, semantic enforcement, LLM-safe access                |
 
 
-# 4. Essential Guidelines to Roadmap:
-You’re thinking about this the right way—and also spotting something many teams miss:
+# 4. Essential Guidelines to Roadmap::
+First of all, this is **not a technology rollout problem**, it’s an **operating model** and **trust transformation**, where the semantic layer and governance become **enterprise capabilities**, not just tools.
 
-This is **not a technology rollout problem**.
-It’s an **operating model + trust transformation**, where the semantic layer and governance become **enterprise capabilities**, not just tools.
-
-If you don’t anchor this at the **C-level + domain ownership level**, everything you listed (1–10) becomes fragmented and fails quietly.
+If you don’t anchor this at the **C-level + domain ownership level**, everything we listed (1–10) becomes fragmented and fails quietly.
 
 ---
 ## Executive Framing (Before the Roadmap)
