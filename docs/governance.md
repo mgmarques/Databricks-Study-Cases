@@ -515,7 +515,7 @@ It’s an **operating model + trust transformation**, where the semantic layer a
 If you don’t anchor this at the **C-level + domain ownership level**, everything you listed (1–10) becomes fragmented and fails quietly.
 
 ---
-# Executive Framing (Before the Roadmap)
+## Executive Framing (Before the Roadmap)
 Position these as **two strategic pillars** in your business plan:
 
 ### Pillar 1 — Semantic Layer
@@ -526,7 +526,7 @@ Position these as **two strategic pillars** in your business plan:
 
 ---
 
-# Roadmap Overview (Phased, Not Tool-Driven)
+## Roadmap Overview (Phased, Not Tool-Driven)
 This is a **4-phase roadmap**, aligned with:
 * Organizational maturity
 * Stakeholder buy-in
@@ -540,7 +540,7 @@ Phase 3 → AI/GenAI Governance Expansion
 ```
 
 ---
-# Phase 0 — Executive Alignment & Operating Model (Critical)
+## Phase 0 — Executive Alignment & Operating Model (Critical)
 ### Objective:
 Secure **C-level buy-in** and define ownership
 
@@ -558,7 +558,7 @@ Secure **C-level buy-in** and define ownership
 * Initial **portfolio of initiatives (your 1–10)**
 
 ---
-## Mapping to Your Components
+### Mapping to Our Components
 
 | Component                | Role in Phase 0                 |
 | ------------------------ | ------------------------------- |
@@ -569,85 +569,83 @@ Secure **C-level buy-in** and define ownership
 
 ---
 
-# Phase 1 — Foundations (Minimum Viable Governance + Semantic Layer)
+## Phase 1 — Foundations (Minimum Viable Governance + Semantic Layer)
 ### Objective:
 
 Deliver **first usable, trusted data products**
 
 ---
-## 1. Semantic Layer (START HERE)
-### Actions:
+### 1. Semantic Layer (START HERE)
+#### Actions:
 * Define **core business metrics (top 10–20)**
 * Standardize definitions across:
   * BI
   * Data teams
 * Implement initial semantic layer
 
-### Output:
+#### Output:
 * “Certified metrics”
 
-## 2. Governance by Design
-### Actions:
+### 2. Governance by Design
+#### Actions:
 * Embed **data quality checks in pipelines**
 * Introduce **data contracts at ingestion**
 
-## 3. Metadata Layer
-### Actions:
+### 3. Metadata Layer
+#### Actions:
 * Deploy catalog
 * Capture:
   * datasets
   * ownership
   * descriptions
 
-## 4. Access Control (Baseline)
-### Actions:
+### 4. Access Control (Baseline)
+#### Actions:
 * Define:
   * roles
   * sensitive data categories
 * Implement basic RBAC
 
-## 5. Observability (Basic)
-### Actions:
+### 5. Observability (Basic)
+#### Actions:
 * Monitor:
   * pipeline failures
   * data freshness
 
-### Phase 1 Deliverables:
+#### Phase 1 Deliverables:
 * First **trusted dashboards**
 * Documented datasets
 * Initial governance adoption
 
 ---
-# Phase 2 — Industrialization (Scale + Standardization)
+## Phase 2 — Industrialization (Scale + Standardization)
 
 ### Objective:
 Scale governance across domains and pipelines
 
-## Expand Components:
-### (4) Metadata Layer → FULL
+### Expand Components:
+#### (4) Metadata Layer → FULL
 * Automated ingestion of metadata
 * Business + technical metadata unified
 
-### (5) End-to-End Lineage
+#### (5) End-to-End Lineage
 * Connect:
   * ingestion → transformation → semantic → consumption
 * Include:
   * dashboards
   * data products
 
-### (6) Access Control → Advanced
-
+#### (6) Access Control → Advanced
 * Row-level security
 * Column masking
 * Policy enforcement via tags
 
-### (7) Data Observability → Advanced
-
+#### (7) Data Observability → Advanced
 * Anomaly detection
 * Data drift monitoring
 * SLA tracking
 
-### (10) Policy-as-Code (START)
+#### (10) Policy-as-Code (START)
 * Version:
   * access policies
   * quality rules
@@ -667,12 +665,12 @@ Scale governance across domains and pipelines
 
 ---
 
-# Phase 3 — AI / ML / GenAI Governance Expansion
-### Objective:
+## Phase 3 — AI / ML / GenAI Governance Expansion
+#### Objective:
 Extend governance into **AI and GenAI workloads**
 
-## (8) ML / Feature Store Governance
-### Actions:
+### (8) ML / Feature Store Governance
+#### Actions:
 * Standardize:
   * feature definitions
   * reuse
@@ -680,34 +678,30 @@ Extend governance into **AI and GenAI workloads**
   * feature lineage
   * training vs serving consistency
 
-## (9) RAG Governance (NEW CAPABILITY)
-
-### Actions:
+### (9) RAG Governance (NEW CAPABILITY)
+#### Actions:
 * Control:
   * what gets embedded
   * who can query what
 * Track:
   * document → embedding → retrieval → response
 
-## (5) Lineage → Extend to AI
+### (5) Lineage → Extend to AI
 * Include:
   * models
   * features
   * embeddings
 
-## Semantic Layer → AI Integration
-
+### Semantic Layer → AI Integration
 ### Actions:
-
 * Expose metrics to:
   * ML pipelines
   * LLMs
 
 This is key: LLMs must **NOT bypass the semantic layer**
 
-## Access Control → AI Context
-
-### Actions:
+### Access Control → AI Context
+#### Actions:
 * Enforce:
   * prompt-time filtering
   * context-aware security
@@ -717,10 +711,10 @@ This is key: LLMs must **NOT bypass the semantic layer**
 * Controlled **RAG pipelines**
 * Trusted **AI outputs**
 
-# Prioritization (Portfolio View)
+## Prioritization (Portfolio View)
 Here’s how you should prioritize in your business plan:
 
-## Tier 1 (Immediate / High Impact)
+### Tier 1 (Immediate / High Impact)
 * (1) Semantic Layer
 * (2) Governance by Design
 * (4) Metadata Layer
@@ -732,8 +726,7 @@ These unlock:
 * Executive buy-in
 
 ---
-
-## Tier 2 (Scale & Reliability)
+### Tier 2 (Scale & Reliability)
 * (5) End-to-End Lineage
 * (7) Data Observability
 * (10) Policy-as-Code
@@ -743,7 +736,7 @@ These ensure:
 * Auditability
 
 ---
-## Tier 3 (Advanced / AI-Driven)
+### Tier 3 (Advanced / AI-Driven)
 * (8) ML / Feature Store Governance
 * (9) RAG Governance
 
@@ -752,7 +745,7 @@ These enable:
 * GenAI at scale
 
 ---
-# Organizational Model (Critical Insight)
+### Organizational Model (Critical Insight)
 This is **human-heavy, not tool-heavy**,so we need:
 
 #### 1. Executive Sponsor (C-level)
@@ -773,7 +766,7 @@ Enables (not owns data)
 
 ---
 # Common Failure Modes (Avoid These)
-* Building catalog without ownership → becomes shelfware
+* Building a catalog without ownership → becomes shelfware
 * Implementing tools before defining metrics → chaos
 * Ignoring semantic layer → inconsistent AI outputs
 * Skipping change management → no adoption
