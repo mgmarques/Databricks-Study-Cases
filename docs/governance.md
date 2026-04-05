@@ -762,20 +762,117 @@ Owns **data as a strategic asset**
 Enables (not owns data)
 
 ---
-# Common Failure Modes (Avoid These)
+## Roadmap Gantt Diagram (Conceptual)
+Below is a **clear Gantt-style representation** of your roadmap, showing:
+* Phases over time
+* Dependencies between layers (semantic, governance, AI)
+* When each component starts and scales
+
+This is **NOT sequential delivery**, it’s **progressive layering**:
+* Phases **overlap intentionally**
+* Capabilities **start small → scale → extend**
+* Each phase **consumes the previous one**
+
+```
+Time ───────────────────────────────────────────────────────────────▶
+Time ───────────────────────────────────────────────────────────────▶
+        Q1         Q2         Q3         Q4         Q5         Q6
+
+PHASE 0  |████|
+Alignment & Vision
+         - Exec buy-in
+         - Governance charter
+         - KPI definition
+
+PHASE 1      |████████████████████████████|
+Foundations
+             - Semantic Layer (core metrics) 
+             - Governance by Design          
+             - Metadata (basic)              
+             - Access Control (RBAC)         
+             - Observability (basic)         
+
+PHASE 2              |██████████████████████████████████████████|
+Industrialization
+                     - Semantic Layer (expand)      
+                     - Metadata (full automation)   
+                     - Lineage (E2E)                
+                     - Access Control (advanced)    
+                     - Observability (advanced)     
+                     - Policy-as-Code (start)       
+
+PHASE 3                          |██████████████████████████████████████|
+AI / GenAI Governance
+                                 - Feature Store Gov        
+                                 - RAG Governance           
+                                 - AI Lineage Extension     
+                                 - Semantic Layer → AI      
+                                 - AI-aware Access Control  
+```
+## Overlay: Priority Tiers on Timeline
+
+```
+Tier 1 (Trust Foundation)
+Q1–Q3 → Semantic Layer, Governance, Metadata, Access
+
+Tier 2 (Scale & Reliability)
+Q3–Q5 → Lineage, Observability, Policy-as-Code
+
+Tier 3 (AI Enablement)
+Q5–Q6 → Feature Store, RAG, AI Governance
+```
+
+---
+## Key Dependencies (What drives what)
+
+### 1. Semantic Layer is the backbone
+* Starts in **Phase 0 (definition)**
+* First delivery in **Phase 1**
+* Expands in **Phase 2**
+* Powers AI in **Phase 3**
+
+Note: Nothing meaningful in AI (Phase 3) works without it.
+
+---
+### 2. Governance evolves in layers
+
+| Stage   | Capability                           |
+| ------- | ------------------------------------ |
+| Phase 0 | Principles (charter, policies)       |
+| Phase 1 | Embedded controls (quality, RBAC)    |
+| Phase 2 | Automation (policy-as-code, lineage) |
+| Phase 3 | AI-aware governance                  |
+
+---
+### 3. Metadata → Lineage → Observability chain
+This is a strict dependency:
+
+```
+Metadata → Lineage → Observability → AI Trust
+```
+
+* You **can’t do lineage without metadata**
+* You **can’t trust AI without lineage**
+
+---
+### 4. Access Control maturity curve
+```
+Phase 1: RBAC
+Phase 2: ABAC (tags, masking, row-level)
+Phase 3: Context-aware (AI, prompts, RAG)
+```
+---
+## Common Failure Modes (Avoid These)
 * Building a catalog without ownership → becomes shelfware
 * Implementing tools before defining metrics → chaos
 * Ignoring semantic layer → inconsistent AI outputs
 * Skipping change management → no adoption
-
 ---
+
 # Conclusion
-The **semantic layer plus governance are not side components**, they are **core transformation programs**
+The **semantic layer and the governance are not side components**, they are **core transformation programs**
 
 If positioned correctly:
 * Semantic Layer = **Business alignment layer**
 * Governance = **Trust enforcement system**
 * AI = **Consumer of both**
-
-
-
