@@ -448,7 +448,8 @@ We’re looking at codifying governance and access policies so they are versione
 Policy-as-Code ensures governance is proactive, not reactive.
 
 Instead of waiting for audits or manual checks, every new dataset, feature, or embedding automatically adheres to access, quality, and lineage policies.
-Combined with semantic layer + governance layers + ML/GenAI tracking, it completes the TO-BE enterprise vision.
+
+Combined with the semantic layer + governance layers + ML/GenAI tracking, it completes the TO-BE enterprise vision.
 
 ### Tools:
 | Responsibility                             | Tool               | Role in Governance                                                                                                              |
@@ -506,7 +507,7 @@ On our architecture:
 | **Consumption**              | 1, 6, and 9     | Access control, masking, auditing, semantic enforcement, LLM-safe access                |
 
 
-# 4. Essential Guidelines to Roadmap::
+# 4. Essential Guidelines to Roadmap:
 First of all, this is **not a technology rollout problem**, it’s an **operating model** and **trust transformation**, where the semantic layer and governance become **enterprise capabilities**, not just tools.
 
 If you don’t anchor this at the **C-level + domain ownership level**, everything we listed (1–10) becomes fragmented and fails quietly.
@@ -522,7 +523,6 @@ Position these as **two strategic pillars** in your business plan:
 *“Trust, control, and compliance embedded into every data & AI product”*
 
 ---
-
 ## Roadmap Overview (Phased, Not Tool-Driven)
 This is a **4-phase roadmap**, aligned with:
 * Organizational maturity
