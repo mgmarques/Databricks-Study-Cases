@@ -774,8 +774,8 @@ This is **NOT sequential delivery**, it’s **progressive layering**:
 * Each phase **consumes the previous one**
 
 ```
-Time ───────────────────────────────────────────────────────────────▶
-Time ───────────────────────────────────────────────────────────────▶
+Time ──────────────────────────────────────────────────────────────────▶
+Time ──────────────────────────────────────────────────────────────────▶
         Q1         Q2         Q3         Q4         Q5         Q6
 
 PHASE 0  |████|
@@ -784,7 +784,7 @@ Alignment & Vision
          - Governance charter
          - KPI definition
 
-PHASE 1      |████████████████████████████|
+PHASE 1      |██████████████████████████|
 Foundations
              - Semantic Layer (core metrics) 
              - Governance by Design          
@@ -792,7 +792,7 @@ Foundations
              - Access Control (RBAC)         
              - Observability (basic)         
 
-PHASE 2              |██████████████████████████████████████████|
+PHASE 2              |██████████████████████████████████████|
 Industrialization
                      - Semantic Layer (expand)      
                      - Metadata (full automation)   
