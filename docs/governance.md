@@ -271,26 +271,14 @@ Basic lineage is not enough anymore; we need lineage across:
 * Embeddings
 
 ### Tools:
-* **OpenLineage**
-* **dbt** lineage graphs
-* **MLflow**
+* **OpenLineage** standardizes lineage emission
+* **Marquez** stores and visualizes runtime lineage
+* **dbt** for data lineage graphs
+* **MLflow** for ML lineage
 
-But none of these alone gives you a full lineage. Together, they can form a complete lineage backbone if integrated correctly.
-**dbt** shows how data transforms, **MLflow** shows how models are built, and **OpenLineage** connects everything into a true end-to-end story.
+Moreover, to converge the AI ML initiatives you still need to **extend later for the RAG lineage** 
 
-Use ALL THREE together:
-* OpenLineage →fpr backbone
-* dbt for data lineage
-* MLflow for ML lineage
-
-and add:
-* Extend later for RAG lineage
-* A catalog/metadata platform to see and query lineage:
-
-Examples:
-* DataHub
-* Amundsen
-* Unity Catalog
+To complete this layer, you need to add a catalog/metadata platform to see and query lineage, so letś take a look below at some usual options:
 
 | Capability              | DataHub      | Amundsen   | Unity Catalog          |
 | ----------------------- | ------------ | ---------- | ---------------------- |
@@ -301,6 +289,67 @@ Examples:
 | AI / ML / RAG readiness | ✅ Strong    | ❌ Weak    | ⚠️ Medium              |
 | Operational effort      | ⚠️ Medium    | ✅ Low     | ✅ Low                 |
 | Vendor lock-in          | ❌ Low       | ❌ Low     | ⚠️ High                |
+     
+Then, let's focus on **DataHub**, which provides governance, discovery, and business context.
+
+But none of these alone gives you a full lineage. Together, they can form a complete lineage backbone if integrated correctly.
+**dbt** shows how data transforms, **MLflow** shows how models are built, **OpenLineage** connects everything into a true end-to-end story as a governance truth, and uses the **Marquez** as its operational truth.
+
+Together, they give you **end-to-end auditability**, which is exactly what compliance frameworks require.
+
+### Why Marquez + OpenLineage together?
+
+**OpenLineage** defines:
+* A **standard format** for lineage events
+* How tools emit lineage (Airflow, Spark, dbt, etc.)
+
+That’s where Marquez comes in:
+
+| Component   | Role                                        |
+| ----------- | ------------------------------------------- |
+| OpenLineage | Standard (the language)                     |
+| Marquez     | Storage + visualization (the database + UI) |
+
+Use Marquez (+ OpenLineage) if:
+* You need **real-time lineage tracking**
+* You want to debug pipelines
+* You care about **job execution visibility**
+
+**Marquez** is:
+* A **backend service + UI** for storing lineage events
+* The **reference implementation of OpenLineage**
+* Focused on **operational lineage (runs, jobs, datasets)**
+
+**Marquez vs DataHub (important distinction)**
+
+| Feature | Marquez           | DataHub                           |
+| ------- | ----------------- | --------------------------------- |
+| Purpose | Runtime lineage   | Metadata platform                 |
+| Focus   | Jobs & runs       | Datasets & governance             |
+| UI      | Technical lineage | Business-friendly catalog         |
+| Storage | Lineage events    | Full metadata graph               |
+| Users   | Engineers         | Engineers + analysts + governance |
+
+Use DataHub if:
+* You need **data discovery & governance**
+* You want **ownership, SLAs, documentation**
+* You need a **business-facing catalog**
+
+---
+### Use BOTH together (best practice)
+This is the modern architecture:
+
+```
+        Airflow / Spark / dbt
+                 │
+        OpenLineage events
+                 │
+             Marquez
+                 │
+        (optional sync)
+                 │
+             DataHub
+```
 
 ### Advanced Strategy:
 **Track:**
