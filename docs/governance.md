@@ -555,7 +555,7 @@ Combined with the semantic layer + governance layers + ML/GenAI tracking, it com
 | **Embeddings & RAG Governance (9)**   | Weaviate + MLflow + custom orchestration            | Embeddings stored with metadata, tracked for lineage, orchestrated for RAG pipelines, access controlled via Unity Catalog + Weaviate ACLs |
 | **Policy-as-Code (10)**               | Terraform + dbt + Unity Catalog APIs                | Codify infra, data rules, and access policies → versioned, testable, automated                                                            |
 
-On our architecture:
+### On our architecture:
 
 | Layer                        | Startegies      |Governance Strategy                                                                      |
 | ---------------------------- | ----------------|---------------------------------------------------------------------------------------- |
