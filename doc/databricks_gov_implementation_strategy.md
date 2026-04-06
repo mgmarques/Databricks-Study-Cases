@@ -192,7 +192,6 @@ Used for:
 * Improves collaboration across teams
 
 ---
-
 ### 4. Metadata Management & Discovery
 We centralize metadata to improve discoverability and governance.
 
@@ -215,6 +214,7 @@ ALTER TABLE finance.curated.transactions SET TAGS ('pii' = 'true');
 * Improves self-service analytics
 * Enables governance at scale
 
+---
 ### 5. Auditability & Compliance — Metadata & Catalog Governance
 We ensure full auditability using logs and monitoring.
 
@@ -230,102 +230,22 @@ We ensure full auditability using logs and monitoring.
   * Permission changes
   * Data modifications
 
-#### What real implementation looks like
-##### A. Split responsibilities
-
-| Concern                | Tool               |
-| ---------------------- | ------------------ |
-| Physical catalog       | Unity Catalog      |
-| Business catalog       | DataHub / Collibra |
-| Lineage (technical)    | Databricks         |
-| Lineage (cross-system) | OpenLineage        |
-
-**Note**: Unity Catalog ≠ enterprise metadata
-
-##### B. Metadata model
-Define mandatory fields:
-
-```yaml
-dataset:
-  owner: string
-  domain: string
-  sla: string
-  classification: [public, internal, confidential]
-  source: string
-```
-
-Enforce via:
-* CI/CD checks
-* Table creation wrappers
-
-##### C. Example: enforced table creation
-Instead of:
-
-```sql
-CREATE TABLE sales;
-```
-
-You enforce:
-
-```python
-create_table(
-  name="sales",
-  owner="finance",
-  classification="confidential",
-  sla="daily"
-)
-```
-
-##### D. Cross-platform lineage
-Databricks lineage stops at its boundary, so we need:
-* OpenLineage + Marquez
-* Or DataHub ingestion
-
-**Otherwise**: You lose governance across tools
-
------------------------------------------
-Here’s your completed section with **practical implementations**, plus a clear explanation of **Marquez** and why it’s used alongside **OpenLineage**.
-
 ---
-
-### 5. Auditability & Compliance — Metadata & Catalog Governance
-
-We ensure full auditability using logs and monitoring.
-
-#### Strategy
-
-* Track all access and changes to data
-* Maintain audit logs for compliance requirements (e.g., GDPR)
-* Enable alerts for suspicious activity
-
-#### Implementation
-
-* Enable Databricks audit logs
-* Monitor:
-
-  * Table access
-  * Permission changes
-  * Data modifications
-
----
-
 ## What real implementation looks like
 
 ### A. Split responsibilities
 
-| Concern                | Tool               |
-| ---------------------- | ------------------ |
-| Physical catalog       | Unity Catalog      |
-| Business catalog       | DataHub / Collibra |
-| Lineage (technical)    | Databricks         |
-| Lineage (cross-system) | OpenLineage        |
+| Concern                | Tool                  |
+| ---------------------- | --------------------- |
+| Physical catalog       | Unity Catalog         |
+| Business catalog       | DataHub               |
+| Lineage (technical)    | Databricks            |
+| Lineage (cross-system) | OpenLineage + Marques |
 
 **Note**: Unity Catalog ≠ enterprise metadata
 
 ---
-
 ### B. Metadata model
-
 Define mandatory fields:
 
 ```yaml
@@ -338,14 +258,11 @@ dataset:
 ```
 
 Enforce via:
-
 * CI/CD checks
 * Table creation wrappers
 
 ---
-
 ### C. Example: enforced table creation
-
 Instead of:
 
 ```sql
@@ -364,18 +281,14 @@ create_table(
 ```
 
 ---
-
 ### D. Cross-platform lineage
-
 Databricks lineage stops at its boundary, so we need:
-
 * OpenLineage + Marquez
 * Or DataHub ingestion
 
 **Otherwise**: You lose governance across tools
 
 ---
-
 ### E. OpenLineage + Marquez (operational lineage)
 * Captures **runtime lineage events** (jobs, inputs, outputs)
 * Stores and visualizes them in Marquez
@@ -451,7 +364,6 @@ sink:
 ```
 
 ---
-
 ### Example: adding metadata programmatically
 
 ```python
