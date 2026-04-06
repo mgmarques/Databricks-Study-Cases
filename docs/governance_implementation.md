@@ -1,25 +1,21 @@
 # Governance Implementation in Practice
+Here we will translate our governance model into **real, enforceable implementations across each architecture layer**, not just concepts.
 
-This section translates our governance model into **real, enforceable implementations across each architecture layer**, not just concepts.
-Each layer shows:
-* **What governance means in practice**
-* **Which tools implement it**
-* **Concrete code examples you could run today**
 
-Our 10 governance layers define what they *really* require:
+Our [10 governance layers](https://github.com/mgmarques/Databricks-Study-Cases/blob/main/docs/governance.md#governance-embedded-across-layers) define what they *really* require in termes of:
 
-| Layer              | What it governs               | Typical tools          |
-| ------------------ | ----------------------------- | ---------------------- |
-| 1. Infrastructure  | Cloud, networking             | Terraform, Cloud IAM   |
-| 2. Storage         | Data layout, formats          | S3/ADLS + Delta        |
-| 3. Compute         | Jobs, clusters, orchestration | Databricks, Airflow    |
-| 4. Data            | Schemas, contracts            | Delta, dbt             |
-| 5. Metadata        | Catalog, lineage              | Unity Catalog, DataHub |
-| 6. Access          | RBAC/ABAC                     | IAM, UC                |
-| 7. Quality         | Tests, SLAs                   | Great Expectations     |
-| 8. Observability   | Monitoring, logs              | Datadog, OpenTelemetry |
-| 9. Usage / BI      | Semantic layer                | Power BI, Looker       |
-| 10. Organizational | Roles, processes              | Not a tool             |
+| Component        | What it governs               | Typical tools          |
+| ---------------- | ----------------------------- | ---------------------- |
+|  Infrastructure  | Cloud, networking             | Terraform, Cloud IAM   |
+|  Storage         | Data layout, formats          | S3/ADLS + Delta        |
+|  Compute         | Jobs, clusters, orchestration | Databricks, Airflow    |
+|  Data            | Schemas, contracts            | Delta, dbt             |
+|  Metadata        | Catalog, lineage              | Unity Catalog, DataHub |
+|  Access          | RBAC/ABAC                     | IAM, UC                |
+|  Quality         | Tests, SLAs                   | Great Expectations     |
+|  Observability   | Monitoring, logs              | Datadog, OpenTelemetry |
+|  Usage / BI      | Semantic layer                | Power BI, Looker       |
+|  Organizational  | Roles, processes              | Not a tool             |
 
 **The key insight**: **Each layer needs its own control plane**, not just Databricks.
 
@@ -38,6 +34,11 @@ Compute       Storage           Metadata        Access
 ```
 
 So, the goal is simple**: move from ***“we define governance”*** to ***“governance is enforced by the platform”***
+
+To provide a guide that is not exhaustive, but practical, we will address our [Modern AI/ML-Ready Data Platform](https://github.com/mgmarques/Databricks-Study-Cases/blob/main/docs/Modern_Data_Architecture.md) and its every [layer](https://github.com/mgmarques/Databricks-Study-Cases/blob/main/docs/governance.md#on-our-architecture) as follows:
+* **What governance means in practice**
+* **Which tools implement it**
+* **Concrete code examples you could run today**
 
 ---
 # 1. Ingestion (Bronze)
@@ -338,8 +339,172 @@ source:
 
 ---
 
-# Common Pitfalls
 
+----------------------------------------------
+#################################
+
+# 6. Semantic Layer
+**Focus:**
+Business-friendly abstraction over Gold/Silver tables, metrics standardization, unified definitions.
+
+## Governance layers:
+### Governance by Design (2)
+Declarative definitions for metrics, dimensions, and authorized datasets.
+
+**Tools**:
+* dbt Semantic Layer (metrics + dimensions)
+* Databricks SQL dashboards
+
+---
+
+#### Practical dbt Semantic Layer example
+
+```yaml id="sem1"
+metrics:
+  - name: total_revenue
+    label: "Total Revenue"
+    description: "Sum of all sales amounts"
+    type: sum
+    sql: amount
+    dimensions:
+      - region
+      - product_category
+```
+
+**Enforces**:
+* standardized business metrics
+* consistent definitions across dashboards and pipelines
+
+### Access Governance (4)
+Control which teams can use which semantic models.
+
+```sql id="sem2"
+GRANT SELECT ON semantic_layer.sales_metrics TO analytics_team;
+```
+
+### Auditability (5)
+Track dashboard usage linked to semantic definitions:
+
+```sql id="sem3"
+SELECT dashboard_id, metric_name, executed_by, execution_time
+FROM system.dashboards.query_log
+WHERE metric_name='total_revenue';
+```
+
+---
+# 7. Feature Store
+**Focus:**
+Centralized ML features with consistent lineage, quality checks, and access control.
+
+## Governance layers:
+### Governance by Design (2)
+Features are defined once and reused across ML pipelines.
+
+**Tools**:
+* Databricks Feature Store
+* Delta Live Tables for feature computation
+
+#### Practical Feature definition
+
+```python id="fs1"
+from databricks.feature_store import FeatureStoreClient
+
+fs = FeatureStoreClient()
+
+fs.create_table(
+    name="finance.customer_risk_score",
+    primary_keys="customer_id",
+    df=customer_risk_df,
+    description="Customer risk scores for ML models"
+)
+```
+
+### Data Quality / Expectations (3)
+Enforce validation before storing features.
+
+```python id="fs2"
+@dlt.expect("valid_score", "risk_score BETWEEN 0 AND 1")
+def features():
+    return customer_risk_df
+```
+
+### Lineage (6)
+OpenLineage + Marquez tracks feature creation and downstream ML models:
+
+```python id="fs3"
+openlineage.emit({
+    "job": "compute_risk_features",
+    "inputs": ["bronze.customers", "bronze.transactions"],
+    "outputs": ["feature_store.customer_risk_score"]
+})
+```
+
+### Access Governance (4)
+Only ML teams or approved analysts can query features:
+
+```sql id="fs4"
+GRANT SELECT ON TABLE feature_store.customer_risk_score TO ml_team;
+```
+
+---
+# 8. ML / RAG Pipelines
+**Focus:**
+End-to-end ML pipelines including training, inference, and retrieval-augmented generation (RAG) while keeping governance, lineage, and security.
+
+## Governance layers:
+### 🔹 Governance by Design (2)
+Policies embedded in ML pipelines: feature validation, dataset access, model registration.
+
+**Tools**:
+* MLflow for model registry
+* Databricks Workflows / Jobs
+* Feature Store
+
+#### Practical MLflow + Databricks example
+
+```python id="ml1"
+import mlflow
+from mlflow.models.signature import infer_signature
+
+with mlflow.start_run():
+    model.fit(X_train, y_train)
+    signature = infer_signature(X_train, y_train)
+    mlflow.sklearn.log_model(model, "risk_model", signature=signature)
+```
+
+**Ensures*:
+* versioned models
+* captured input/output schema
+* reproducibility
+
+### Data Contracts & Quality (3)
+Validate inputs for ML pipelines:
+
+```python id="ml2"
+assert df_features.select("risk_score").dropna().count() == df_features.count()
+```
+
+### Lineage / Observability (6)
+Track data → feature → model → prediction flows:
+
+```python id="ml3"
+openlineage.emit({
+    "job": "train_risk_model",
+    "inputs": ["feature_store.customer_risk_score"],
+    "outputs": ["ml_model_registry.risk_model"]
+})
+```
+
+### Security & Access (4)
+* Model access controlled via MLflow permissions
+* RAG knowledge base access restricted
+
+```python id="ml4"
+GRANT EXECUTE ON MODEL mlflow_registry.risk_model TO ml_team;
+```
+
+---
+## Common Pitfalls
 ### 1. “We have lineage” (but only inside Databricks)
 * Problem: breaks at system boundaries
 * Fix: use OpenLineage
@@ -357,8 +522,13 @@ source:
 *Problem: incomplete governance
 * Fix: use both together
 
+### 5. Pitfalls in ML / RAG governance
+* **Untracked features**: lineage gaps
+* **Unversioned models**: audit and compliance risk
+* **Uncontrolled retrieval sources**: sensitive data leakage
+
 ---
-# Conclusion
+## Conclusion
 
 Real governance is not:
 
@@ -372,13 +542,20 @@ It is:
 Code + Platform + Enforcement
 ```
 
-Across your architecture:
+Full Governance Across All Layers in our architecture:
 
-* **Bronze (Ingestion)** → contracts + schema + early metadata
-* **Silver/Gold (Storage)** → access + audit + classification
-* **Processing** → quality + lineage
-* **Serving** → discoverability + trust
-* **Cross-layer** → unified metadata + lineage
+| Layer                       | Governance Implementation Highlights                                                  |
+| --------------------------- | ------------------------------------------------------------------------------------- |
+| Bronze / Ingestion          | Data contracts, schema validation, DLT expectations, DataHub ingestion                |
+| Silver / Gold Storage       | Unity Catalog access, row-level security, audit logs, classification                  |
+| Processing / Transformation | Delta Live Tables + dbt, lineage (OpenLineage + Marquez), runtime quality enforcement |
+| Semantic Layer              | Standardized metrics, dashboards, business-friendly abstractions, access control      |
+| Feature Store               | Centralized features, quality validation, lineage tracking, team-based access         |
+| Serving / Consumption       | Certified datasets, discoverability, query monitoring                                 |
+| ML / RAG                    | Versioned models (MLflow), validated features, lineage, controlled retrieval sources  |
+
+**Key takeaway:**
+Governance is **not optional at higher layers**. Each layer builds on the previous one, enforcing policies **from ingestion to ML outputs**. Real tooling + practical enforcement ensures **auditability, compliance, and trust**, not just documentation.
 
 When all layers enforce governance, you achieve:
 * auditability
