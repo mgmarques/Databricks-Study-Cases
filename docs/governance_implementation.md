@@ -338,11 +338,6 @@ source:
 * business metadata
 
 ---
-
-
-----------------------------------------------
-#################################
-
 # 6. Semantic Layer
 **Focus:**
 Business-friendly abstraction over Gold/Silver tables, metrics standardization, unified definitions.
