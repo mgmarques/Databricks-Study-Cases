@@ -1,8 +1,13 @@
-# Data Governance Implementation Strategy - Databricks-centric
- Let's add some concrete strategies, real tooling, be Databricks-focused, and provide clear “how-to” guidance.
+# Data Governance Implementation Strategy
+Let's add some concrete strategies, real tooling, be Databricks-focused, but do not be centric on it, and provide clear “how-to” guidance.
 
 ### Data Governance in Practice
-To effectively address data governance challenges, we implement a combination of **centralized governance controls**, **automated enforcement**, and **clear ownership models** across the data platform.
+To effectively address data governance challenges, we implement a combination of **centralized governance controls**, **automated enforcement**, and **clear ownership models** across the data platform, which must turn the governance into:
+* centralized
+* reactive
+* metadata-focused
+* propagated into ingestion, transformation, serving
+* enforced by design (not just monitored)
 
 ### 1. Access Control & Security
 
