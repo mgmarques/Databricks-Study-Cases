@@ -1,37 +1,12 @@
-You’re absolutely right in your critique — and it’s a *common trap* when translating governance from conceptual → implementation: people collapse everything into “Databricks + Unity Catalog” and lose the multi-layer nature of governance.
+# Governance Implementation in Practice
 
-I’ll break this into three parts:
+This section translates our governance model into **real, enforceable implementations across each architecture layer**, not just concepts.
+Each layer shows:
+* **What governance means in practice**
+* **Which tools implement it**
+* **Concrete code examples you could run today**
 
-1. What Databricks actually gives you (and its limits)
-2. What your **10-layer governance model implies architecturally**
-3. Concrete **how-to implement sections 3, 5, and 6** (the gaps you pointed out)
-
----
-
-# 1) Where your current doc falls short (and why)
-
-The implementation doc leans heavily on Databricks-native governance (Unity Catalog, etc.), which is only **one slice of governance**.
-
-Even Databricks itself frames governance as just **one pillar** in a broader architecture — alongside security, reliability, cost, etc. ([Documentação Databricks][1])
-
-And inside that pillar, it focuses mainly on:
-
-* Metadata & catalog
-* Access control
-* Lineage
-* Data quality (basic) ([Documentação Databricks][2])
-
-👉 That maps to maybe **3–4 of your 10 layers**, not all of them.
-
-So your instinct is correct:
-
-> The implementation doc is **platform-centric**, while the conceptual doc is **system-of-systems governance**.
-
----
-
-# 2) Your 10 governance layers → what they *really* require
-
-From experience + your description, your governance model likely spans something like:
+Our 10 governance layers define what they *really* require:
 
 | Layer              | What it governs               | Typical tools          |
 | ------------------ | ----------------------------- | ---------------------- |
@@ -46,310 +21,9 @@ From experience + your description, your governance model likely spans something
 | 9. Usage / BI      | Semantic layer                | Power BI, Looker       |
 | 10. Organizational | Roles, processes              | Not a tool             |
 
-👉 The key insight:
-**Each layer needs its own control plane**, not just Databricks.
+**The key insight**: **Each layer needs its own control plane**, not just Databricks.
 
----
-
-# 3) Filling the missing implementation depth
-
-You specifically called out **sections 3, 5, 6** — let’s turn those into real implementations.
-
----
-
-# 🔧 Section 3 — Compute Governance (Jobs, Workloads, Orchestration)
-
-### What was missing
-
-Likely stayed at:
-
-> “Use Databricks Jobs”
-
-That’s not governance.
-
----
-
-## What real implementation looks like
-
-### A. Standardize execution model
-
-Define **workload types**:
-
-```yaml
-workload_types:
-  - batch_etl
-  - streaming
-  - ml_training
-  - ad_hoc
-```
-
-Then enforce via:
-
-* Job templates
-* Cluster policies
-
----
-
-### B. Enforce cluster policies (critical)
-
-Example:
-
-```json
-{
-  "spark_version": {
-    "type": "fixed",
-    "value": "13.3.x-scala2.12"
-  },
-  "node_type_id": {
-    "type": "allowed",
-    "values": ["Standard_DS3_v2"]
-  },
-  "autotermination_minutes": {
-    "type": "range",
-    "maxValue": 60
-  }
-}
-```
-
-👉 This is **governance of cost + reliability**
-
----
-
-### C. Orchestration separation (important insight)
-
-Don’t let Databricks own everything.
-
-Use:
-
-* Airflow / Dagster → orchestration
-* Databricks → execution engine
-
-Why?
-
-* Clear separation of concerns
-* Cross-platform lineage
-
----
-
-### D. Tagging strategy (often missing)
-
-Every job must include:
-
-```python
-spark.conf.set("pipeline.owner", "finance")
-spark.conf.set("pipeline.domain", "billing")
-spark.conf.set("data.classification", "pii")
-```
-
-Used for:
-
-* Cost attribution
-* Access policies
-* Observability
-
----
-
-# 🔧 Section 5 — Metadata & Catalog Governance
-
-This is where most people **over-trust Unity Catalog**.
-
----
-
-## What was missing
-
-Probably:
-
-> “Use Unity Catalog for metadata”
-
-That’s incomplete.
-
----
-
-## What real implementation looks like
-
-### A. Split responsibilities
-
-| Concern                | Tool               |
-| ---------------------- | ------------------ |
-| Physical catalog       | Unity Catalog      |
-| Business catalog       | DataHub / Collibra |
-| Lineage (technical)    | Databricks         |
-| Lineage (cross-system) | OpenLineage        |
-
-👉 Unity Catalog ≠ enterprise metadata
-
----
-
-### B. Metadata model (this is critical)
-
-Define mandatory fields:
-
-```yaml
-dataset:
-  owner: string
-  domain: string
-  sla: string
-  classification: [public, internal, confidential]
-  source: string
-```
-
-Enforce via:
-
-* CI/CD checks
-* Table creation wrappers
-
----
-
-### C. Example: enforced table creation
-
-Instead of:
-
-```sql
-CREATE TABLE sales;
-```
-
-You enforce:
-
-```python
-create_table(
-  name="sales",
-  owner="finance",
-  classification="confidential",
-  sla="daily"
-)
-```
-
----
-
-### D. Cross-platform lineage (huge gap in most docs)
-
-Databricks lineage stops at its boundary.
-
-You need:
-
-* OpenLineage + Marquez
-* Or DataHub ingestion
-
-Otherwise:
-👉 You lose governance across tools
-
----
-
-# 🔧 Section 6 — Access Governance (RBAC, ABAC, Policies)
-
-This is where most implementations are dangerously shallow.
-
----
-
-## What was missing
-
-Probably:
-
-> “Use Unity Catalog permissions”
-
-That’s **table-level RBAC only**.
-
----
-
-## What real implementation looks like
-
-### A. Multi-layer access model
-
-| Layer    | Control             |
-| -------- | ------------------- |
-| Cloud    | IAM roles           |
-| Platform | Databricks groups   |
-| Data     | Row/column security |
-| Business | BI tool permissions |
-
----
-
-### B. Attribute-Based Access Control (ABAC)
-
-Instead of:
-
-```sql
-GRANT SELECT ON sales TO analysts;
-```
-
-Use tags:
-
-```sql
-ALTER TABLE sales SET TAGS ('classification' = 'confidential');
-```
-
-Then policies:
-
-```sql
-CREATE POLICY pii_policy
-AS (classification != 'confidential' OR is_member('pii_access'));
-```
-
----
-
-### C. Row-level security example
-
-```sql
-CREATE VIEW sales_secure AS
-SELECT *
-FROM sales
-WHERE region = current_user_region()
-```
-
----
-
-### D. Identity federation (often missing)
-
-Don’t manage users in Databricks.
-
-Use:
-
-* Azure AD / Okta
-* SCIM sync
-
----
-
-### E. Policy-as-code (this is key)
-
-Store access rules in Git:
-
-```yaml
-policies:
-  - dataset: sales
-    access:
-      - role: analyst
-        permission: read
-      - role: finance_admin
-        permission: write
-```
-
-Deploy via pipeline.
-
----
-
-# 🔥 The core architectural correction
-
-Your conceptual doc implies:
-
-> Governance is **distributed across layers**
-
-Your implementation doc assumes:
-
-> Governance is **centralized in Databricks**
-
-That’s the mismatch.
-
----
-
-# ✔️ What your improved architecture should look like
-
-Instead of:
-
-```
-Databricks (does everything)
-```
-
-Move to:
+What our improved architecture should look like:
 
 ```
             ┌──────────────────────┐
@@ -363,25 +37,352 @@ Compute       Storage           Metadata        Access
 (Databricks)  (S3/Delta)        (DataHub)       (IAM + UC)
 ```
 
----
-
-# Final takeaway (the important one)
-
-Your instinct is 100% right:
-
-> The document is **tool-centric**, but governance is **architecture-centric**.
-
-To fix it:
-
-* Treat Databricks as **one governed component**
-* Not **the governance system itself**
+So, the goal is simple**: move from ***“we define governance”*** to ***“governance is enforced by the platform”***
 
 ---
+# 1. Ingestion (Bronze)
+**Focus:**
+Data contracts, schema enforcement, metadata capture, ownership, and sensitive data tagging.
 
-If you want, I can:
+## Governance layers:
+### Governance by Design (2)
+Declarative policies baked into pipelines.
 
-* Map your exact **10 governance layers → concrete tool stack**
-* Or rewrite one of your sections (3, 5, or 6) into a **production-grade implementation spec**
+**Tools**:
+* dbt tests
+* Delta Live Tables (DLT)
 
-[1]: https://docs.databricks.com/gcp/en/lakehouse-architecture/well-architected?utm_source=chatgpt.com "Data lakehouse architecture: Databricks well-architected framework | Databricks on Google Cloud"
-[2]: https://docs.databricks.com/gcp/en/lakehouse-architecture/data-governance/index.html?utm_source=chatgpt.com "Data and AI governance for the data lakehouse | Databricks on Google Cloud"
+#### Practical dbt test real examples for governance
+
+```yaml
+version: 2
+
+models:
+  - name: bronze_payments
+    columns:
+      - name: payment_id
+        tests:
+          - not_null
+          - unique
+
+      - name: amount
+        tests:
+          - not_null
+
+      - name: currency
+        tests:
+          - accepted_values:
+              values: ['USD', 'EUR', 'BRL']
+```
+
+**Guarantees**:
+* No null IDs
+* No duplicates
+* Controlled domain values
+
+#### Practical DLT expectations
+
+```python
+import dlt
+
+@dlt.table(
+  comment="Raw payments with enforced quality rules"
+)
+@dlt.expect("valid_amount", "amount > 0")
+@dlt.expect("valid_currency", "currency IN ('USD','EUR','BRL')")
+def bronze_payments():
+    return spark.readStream.format("cloudFiles").load("/raw/payments")
+```
+
+**Enforces**:
+* Data validity at ingestion
+* Automatic failure or quarantine
+
+### Data Contracts (3)
+Federated Bronze enforcement, schema + SLA + ownership.
+
+**Tools**:
+* Amazon MSK
+* Confluent Schema Registry
+* dbt models
+
+#### Practical AWS MSK real examples for governance
+Producer with schema enforcement:
+
+```python
+from confluent_kafka import Producer
+from confluent_kafka.schema_registry import SchemaRegistryClient
+
+schema_registry_conf = {'url': 'http://schema-registry:8081'}
+schema_registry_client = SchemaRegistryClient(schema_registry_conf)
+
+producer = Producer({'bootstrap.servers': 'msk-broker:9092'})
+
+producer.produce(
+    topic="payments",
+    key="123",
+    value='{"payment_id":123,"amount":100.5,"currency":"USD"}'
+)
+
+producer.flush()
+```
+
+#### Schema definition (contract)
+
+```json
+{
+  "type": "record",
+  "name": "Payment",
+  "fields": [
+    {"name": "payment_id", "type": "int"},
+    {"name": "amount", "type": "double"},
+    {"name": "currency", "type": "string"}
+  ]
+}
+```
+
+**Guarantees**:
+* Producers cannot break the schema
+* Consumers rely on a stable structure
+
+### Metadata Capture (1)
+Capture ownership + classification early.
+
+**Tools**:
+* DataHub
+
+#### Practical metadata ingestion example
+
+```bash
+datahub ingest -c s3_ingestion.yml
+```
+
+```yaml
+source:
+  type: s3
+  config:
+    path_specs:
+      - include: s3://bronze/payments/*.json
+
+sink:
+  type: datahub-rest
+  config:
+    server: http://datahub:8080
+```
+
+---
+# 2. Storage (Silver / Gold - Lakehouse)
+**Focus:**
+Access control, classification enforcement, and auditability.
+
+## Governance layers:
+### Policy Enforcement (4)
+Fine-grained access based on classification.
+
+**Tools**:
+* Unity Catalog
+
+#### Practical SQL example
+
+```sql
+GRANT SELECT ON TABLE finance.sales TO `analyst_group`;
+```
+
+Row-level security:
+
+```sql
+CREATE ROW FILTER region_filter
+AS (region = current_user_region());
+```
+
+### Auditability (5)
+Track all access and changes.
+
+**Tools**:
+
+* Databricks audit logs
+
+#### Practical audit query
+
+```sql
+SELECT user_name, action_name, table_name, event_time
+FROM system.access.audit
+WHERE table_name = 'finance.sales';
+```
+
+**Enables**:
+* compliance audits
+* incident investigation
+
+### Metadata Enforcement (1)
+
+#### Table properties enforcing governance
+
+```sql
+ALTER TABLE finance.sales
+SET TBLPROPERTIES (
+  'owner' = 'finance',
+  'classification' = 'confidential',
+  'sla' = 'daily'
+);
+```
+
+---
+# 3. Processing / Transformation
+**Focus:**
+Data quality, lineage, controlled transformations.
+
+## Governance layers:
+### Governance by Design (2)
+**Tools**:
+* DLT
+* dbt
+
+#### Practical transformation rule
+
+```python
+@dlt.table
+@dlt.expect("valid_customer", "customer_id IS NOT NULL")
+def silver_sales():
+    return dlt.read("bronze_sales")
+```
+
+### Lineage (6) 
+Cross-system lineage tracking.
+
+**Tools**:
+* OpenLineage
+* Marquez
+
+#### Practical OpenLineage configuration
+
+```bash
+export OPENLINEAGE_URL=http://marquez:5000
+export OPENLINEAGE_NAMESPACE=prod
+```
+
+#### Spark lineage emission
+
+```python
+spark.conf.set("spark.openlineage.transport.type", "http")
+spark.conf.set("spark.openlineage.transport.url", "http://marquez:5000")
+```
+
+**Captures**:
+* inputs / outputs
+* job runs
+* timestamps
+
+---
+# 4. Serving / Consumption
+**Focus:**
+Trusted datasets, discoverability, controlled access.
+
+## Governance layers:
+### 🔹 Data Discovery & Catalog (1)
+
+**Tools**:
+* DataHub
+
+#### Practical dataset enrichment
+
+```python
+emitter.emit({
+  "dataset": "finance.sales",
+  "description": "Certified finance dataset",
+  "tags": ["gold", "certified"]
+})
+```
+
+### Access Governance (4)
+
+```sql
+GRANT SELECT ON TABLE finance.sales TO finance_team;
+```
+
+### Usage Observability (5)
+**Combine**:
+* audit logs
+* lineage
+
+**Answers**:
+* who used what
+* downstream impact
+
+---
+# 5. Cross-Layer Governance (Metadata + Lineage Federation)
+**Focus:**
+Unified governance across all layers.
+
+## Governance layers:
+### Lineage Federation (6)
+**Tools**:
+* OpenLineage
+* Marquez
+* DataHub
+
+
+#### Practical integration (OpenLineage → DataHub)
+
+```yaml
+source:
+  type: openlineage
+  config:
+    endpoint: http://marquez:5000
+```
+
+✔ Unifies:
+
+* runtime lineage
+* business metadata
+
+---
+
+# Common Pitfalls
+
+### 1. “We have lineage” (but only inside Databricks)
+* Problem: breaks at system boundaries
+* Fix: use OpenLineage
+
+### 2. Metadata is defined, but not enforced
+
+* Problem: documentation only
+* Fix: enforce via CI/CD + table properties
+
+### 3. Governance only at the Gold layer
+* Problem: too late
+* Fix: enforce at Bronze
+
+### 4. DataHub OR OpenLineage (wrong choice)
+*Problem: incomplete governance
+* Fix: use both together
+
+---
+# Conclusion
+
+Real governance is not:
+
+* dashboards
+* documentation
+* policies in Confluence
+
+It is:
+
+```text
+Code + Platform + Enforcement
+```
+
+Across your architecture:
+
+* **Bronze (Ingestion)** → contracts + schema + early metadata
+* **Silver/Gold (Storage)** → access + audit + classification
+* **Processing** → quality + lineage
+* **Serving** → discoverability + trust
+* **Cross-layer** → unified metadata + lineage
+
+When all layers enforce governance, you achieve:
+* auditability
+* compliance
+* trust in data
+
+Ultimately, it's not just a promise, but an embedded and actionable **system property**.
