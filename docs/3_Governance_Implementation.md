@@ -2,7 +2,7 @@
 Here we will translate our governance model into **real, enforceable implementations across each architecture layer**, not just concepts.
 
 
-Our [10 governance layers](https://github.com/mgmarques/Databricks-Study-Cases/blob/main/docs/governance.md#governance-embedded-across-layers) define what they *really* require in termes of:
+Our [10 governance layers](https://github.com/mgmarques/Databricks-Study-Cases/blob/main/docs/2_Governance.md#governance-embedded-across-layers) define what they *really* require in termes of:
 
 | Component        | What it governs               | Typical tools          |
 | ---------------- | ----------------------------- | ---------------------- |
@@ -35,7 +35,7 @@ Compute       Storage           Metadata        Access
 
 So, the goal is simple**: move from ***“we define governance”*** to ***“governance is enforced by the platform”***
 
-To provide a guide that is not exhaustive, but practical, we will address our [Modern AI/ML-Ready Data Platform](https://github.com/mgmarques/Databricks-Study-Cases/blob/main/docs/Modern_Data_Architecture.md) and its every [layer](https://github.com/mgmarques/Databricks-Study-Cases/blob/main/docs/governance.md#on-our-architecture) as follows:
+To provide a guide that is not exhaustive, but practical, we will address our [Modern AI/ML-Ready Data Platform](https://github.com/mgmarques/Databricks-Study-Cases/blob/main/docs/1_Modern_Data_Architecture.md) and its every [layer](https://github.com/mgmarques/Databricks-Study-Cases/blob/main/docs/2_Governance.md#on-our-architecture) as follows:
 * **What governance means in practice**
 * **Which tools implement it**
 * **Concrete code examples you could run today**
