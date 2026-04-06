@@ -20,6 +20,18 @@ It’s an **operating model** and **trust transformation**, where the **semantic
 
 If you don’t anchor this at the C-level and domain ownership level, everything we listed here becomes fragmented and fails quietly.
 
+Therefore, we first need to align ourselves with the pillars of standard governance and define the essential components of modern data governance, which encompass areas such as:
+* Access control
+* Data quality
+* Lineage
+* Metadata
+* Compliance
+
+We also need to reflect common architectural thinking, through a centralized governance and a unified catalog, which is consistent with best practices such as:
+* Centralized metadata management
+* Unified governance layers
+* Role-based access control
+
 So, let's start with a deeper, practical expansion of **specific strategies** and **tools** mapped to the challenges that typically arise in this kind of **Lakehouse + Data Mesh + AI/GenAI platform**.
 
 ---
